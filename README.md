@@ -30,11 +30,11 @@ Installation:
   * openssl
   * openssl-dev
 
-
   then install python modules:
 
+    ```
     pip3 install -r requirements.txt
-
+    ```
 
   **DHCP server:**
 
@@ -42,6 +42,7 @@ Installation:
 
   in case they don't have guest agent installed, thus you need enable OMAPI on DHCP server e.g.:
 
+    ```
     key omapi_key {
          algorithm hmac-md5;
          secret Ofakekeyfakekeyfakekey==;
@@ -49,8 +50,9 @@ Installation:
 
     omapi-port 7911;
     omapi-key omapi_key;
+    ```
 
-    **NOTE:** Generate your own private key and certificate, those included are for demo purposes!!
+  **NOTE:** Generate your own private key and certificate, those included are for demo purposes!!
 
 Usage:
 =========
