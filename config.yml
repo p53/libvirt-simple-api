@@ -1,0 +1,14 @@
+auth:
+  username: TRANSFER
+  password: /h9xIk0tbF3A0lOzy6BYAQ==
+
+libvirt:
+  uri: 'qemu:///system'
+
+
+dhcp_api:
+  use_dhcp: true
+  key_name: DDNS_UPDATE
+  base64_encoded_key: cvwBXQ+eu3oJkf2en6t1jg==
+  dhcp_server_ip: 192.168.200.5
+  port: 7911

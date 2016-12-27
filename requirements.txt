@@ -1,0 +1,15 @@
+configparser==3.5.0
+distribute==0.7.3
+dnspython==1.15.0
+Flask==0.10.1
+itsdangerous==0.23
+Jinja2==2.7.1
+MarkupSafe==0.18
+pyOpenSSL==16.2.0
+Werkzeug==0.11.11
+pyYAML==3.12
+libvirt-python==2.5.0
+pypureomapi==0.5
+# for openssl we need also
+# openssl-dev packages from OS->C header files
+# python-dev packages from OS->C header files
