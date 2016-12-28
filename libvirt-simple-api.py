@@ -96,6 +96,21 @@ def get_ip_from_dhcp(mac_address):
             ip_address = pypureomapi.unpack_ip(dict(response.obj)[b"ip-address"])
         except KeyError:  # ip-address
             raise pypureomapi.OmapiErrorNotFound()
+    except pypureomapi.OmapiErrorNotFound as exc:
+        o = pypureomapi.Omapi(dhcp_server_ip, port, key_name, base64_encoded_key)
+        msg = OmapiMessage.open(b"host")
+        msg.obj.append((b"hardware-address", pypureomapi.pack_mac(mac_address)))
+        msg.obj.append((b"hardware-type", struct.pack("!I", 1)))
+
+        response = o.query_server(msg)
+
+        if response.opcode != pypureomapi.OMAPI_OP_UPDATE:
+            raise pypureomapi.OmapiErrorNotFound()
+
+        try:
+            ip_address = pypureomapi.unpack_ip(dict(response.obj)[b"ip-address"])
+        except KeyError:  # ip-address
+            raise pypureomapi.OmapiErrorNotFound()
     except pypureomapi.OmapiError as exc:
         print('an error occured: {}'.format(str(exc)))
 

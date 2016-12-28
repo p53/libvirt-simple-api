@@ -7,7 +7,7 @@ Jinja2==2.7.1
 MarkupSafe==0.18
 pyOpenSSL==16.2.0
 Werkzeug==0.11.11
-pyYAML==3.12
+PyYAML==3.12
 libvirt-python==2.5.0
 pypureomapi==0.5
 # for openssl we need also
