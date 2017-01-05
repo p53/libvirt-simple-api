@@ -2,6 +2,10 @@ auth:
   username: TRANSFER
   password: /h9xIk0tbF3A0lOzy6BYAQ==
 
+server:
+  host: '0.0.0.0'
+  port: '5000'
+
 libvirt:
   uri: 'qemu:///system'
 

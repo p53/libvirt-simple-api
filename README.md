@@ -29,6 +29,7 @@ Installation:
   * python devel
   * openssl
   * openssl-dev
+  * libvirt-devel
 
 
   then install python modules:

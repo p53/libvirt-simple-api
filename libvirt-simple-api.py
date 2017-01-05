@@ -274,11 +274,14 @@ if __name__ == '__main__':
     config_name = 'config.yml'
     config_path = '{}/{}'.format(dir_path, config_name)
 
-    conf = Config(config_path)
+    conf = Config(config_path).config
+
+    server_ip = conf['server']['host']
+    server_port = conf['server']['port']
 
     cert_path = '{}/certificate.crt'.format(dir_path)
     private_key_path = '{}/privateKey.key'.format(dir_path)
 
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     context.load_cert_chain(certfile=cert_path, keyfile=private_key_path)
-    app.run(host='127.0.0.1',port=5000,debug=False,ssl_context=context)
+    app.run(host=server_ip,port=server_port,debug=False,ssl_context=context)

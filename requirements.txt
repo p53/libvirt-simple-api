@@ -11,5 +11,6 @@ PyYAML==3.12
 libvirt-python==2.5.0
 pypureomapi==0.5
 # for openssl we need also
-# openssl-dev packages from OS->C header files
+# libssl-dev packages from OS->C header files
 # python-dev packages from OS->C header files
+# libvirt-devel OS package
