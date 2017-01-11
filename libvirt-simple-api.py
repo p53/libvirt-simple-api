@@ -277,7 +277,7 @@ if __name__ == '__main__':
     conf = Config(config_path).config
 
     server_ip = conf['server']['host']
-    server_port = conf['server']['port']
+    server_port = int(conf['server']['port'])
 
     cert_path = '{}/certificate.crt'.format(dir_path)
     private_key_path = '{}/privateKey.key'.format(dir_path)
