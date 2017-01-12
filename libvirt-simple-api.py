@@ -79,7 +79,7 @@ def get_ip_from_dhcp(mac_address):
     key_name=config['dhcp_api']['key_name'].encode('utf-8')
     base64_encoded_key=config['dhcp_api']['base64_encoded_key'].encode('utf-8')
     dhcp_server_ip=config['dhcp_api']['dhcp_server_ip']
-    port = config['dhcp_api']['port']
+    port = int(config['dhcp_api']['port'])
 
     try:
         o = pypureomapi.Omapi(dhcp_server_ip, port, key_name, base64_encoded_key)
