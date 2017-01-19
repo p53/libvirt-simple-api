@@ -263,6 +263,7 @@ def get_domains(state='1'):
 @auth_decorator()
 def get_domain(name, state='1'):
     domains_info = []
+    domain_info = {}
     conf = Config()
     config = conf.config
     conn = libvirt.open(config['libvirt']['uri'])
@@ -275,7 +276,7 @@ def get_domain(name, state='1'):
         domain = conn.lookupByName(name)
     except libvirt.libvirtError as exc:
         return domains_info.append(domain_info)
-        
+
     if domain is None:
         msg = 'Failed to get domain for connection {}'.format(self.libvirt_uri)
         return jsonify({'error': msg})
