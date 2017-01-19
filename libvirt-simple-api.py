@@ -158,7 +158,15 @@ def get_ip(conn, domain, root):
                     ip_address = dhcp_leases[0]['ipaddr']
                 else:
                     if config['dhcp_api']['use_dhcp']:
-                        ip_address = get_ip_from_dhcp(mac_address)
+                        try:
+                            ip_address = get_ip_from_dhcp(mac_address)
+                        except pypureomapi.OmapiError as exc:
+                            try:
+                                data = socket.gethostbyname(domain.name())
+                                ip = repr(data)
+                                ip_address = ip
+                            except socket.gaierror as exc:
+                                pass
                     else:
                         try:
                             data = socket.gethostbyname(domain.name())
@@ -174,7 +182,15 @@ def get_ip(conn, domain, root):
             mac_address = mac_elem.get('address')
 
             if config['dhcp_api']['use_dhcp']:
-                ip_address = get_ip_from_dhcp(mac_address)
+                try:
+                    ip_address = get_ip_from_dhcp(mac_address)
+                except pypureomapi.OmapiError as exc:
+                    try:
+                        data = socket.gethostbyname(domain.name())
+                        ip = repr(data)
+                        ip_address = ip
+                    except socket.gaierror as exc:
+                        pass
             else:
                 try:
                     data = socket.gethostbyname(domain.name())
