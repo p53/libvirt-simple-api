@@ -140,7 +140,7 @@ def get_ip(conn, domain, root):
         for iface_address in ifaces[iface_names[0]]['addrs']:
             if iface_address['type'] == 0:
                 ip_address = iface_address['addr']
-    except libvirt.libvirtError as exc:
+    except (AttributeError, libvirt.libvirtError) as exc:
         kvm_net_intf = root.find("./devices/interface[@type='network']")
 
         if kvm_net_intf is not None:
