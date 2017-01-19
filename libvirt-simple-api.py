@@ -277,7 +277,7 @@ def get_domain(name, state='1'):
         msg = 'Failed to get domain for connection {}'.format(self.libvirt_uri)
         return jsonify({'error': msg})
 
-    domain_info = get_domain_data(domain, state)
+    domain_info = get_domain_data(conn, domain, state)
     domains_info.append(domain_info)
 
     return jsonify({'domains': domains_info})
