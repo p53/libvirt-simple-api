@@ -271,8 +271,11 @@ def get_domain(name, state='1'):
         msg = 'Failed to open connection to {}'.format(self.libvirt_uri)
         return jsonify({'error': msg})
 
-    domain = conn.lookupByName(name)
-
+    try:
+        domain = conn.lookupByName(name)
+    except libvirt.libvirtError as exc:
+        return domains_info.append(domain_info)
+        
     if domain is None:
         msg = 'Failed to get domain for connection {}'.format(self.libvirt_uri)
         return jsonify({'error': msg})
