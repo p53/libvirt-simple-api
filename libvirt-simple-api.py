@@ -288,10 +288,9 @@ def get_domain(name, state='1'):
 
         domain_info = get_domain_data(conn, domain, state)
 
+        domains_info.append(domain_info)
     except Exception as exc:
         errors.append(str(exc))
-
-    domains_info.append(domain_info)
 
     return jsonify({'domains': domains_info, 'errors': errors})
 
