@@ -239,24 +239,29 @@ def get_domains(state='1'):
     domains_info = []
     conf = Config()
     config = conf.config
-    conn = libvirt.open(config['libvirt']['uri'])
+    errors = []
 
-    if conn is None:
-        msg = 'Failed to open connection to {}'.format(self.libvirt_uri)
-        return jsonify({'error': msg})
+    try:
+        conn = libvirt.open(config['libvirt']['uri'])
 
-    domains = conn.listAllDomains()
+        if conn is None:
+            msg = 'Failed to open connection to {}'.format(self.libvirt_uri)
+            errors.append(msg)
 
-    if domains is None:
-        msg = 'Failed to list domains for connection {}'.format(self.libvirt_uri)
-        return jsonify({'error': msg})
+        domains = conn.listAllDomains()
 
-    for domain in domains:
-        domain_info = get_domain_data(conn, domain, state)
-        if domain_info:
-            domains_info.append(domain_info)
+        if domains is None:
+            msg = 'Failed to list domains for connection {}'.format(self.libvirt_uri)
+            errors.append(msg)
 
-    return jsonify({'domains': domains_info})
+        for domain in domains:
+            domain_info = get_domain_data(conn, domain, state)
+            if domain_info:
+                domains_info.append(domain_info)
+    except Exception as exc:
+        errors.append(str(exc))
+
+    return jsonify({'domains': domains_info, 'errors': errors})
 
 @app.route('/domain/<string:name>', methods=['GET'])
 @app.route('/domain/<string:name>/<string:state>', methods=['GET'])
@@ -266,25 +271,29 @@ def get_domain(name, state='1'):
     domain_info = {}
     conf = Config()
     config = conf.config
-    conn = libvirt.open(config['libvirt']['uri'])
-
-    if conn is None:
-        msg = 'Failed to open connection to {}'.format(self.libvirt_uri)
-        return jsonify({'error': msg})
+    errors = []
 
     try:
+        conn = libvirt.open(config['libvirt']['uri'])
+
+        if conn is None:
+            msg = 'Failed to open connection to {}'.format(self.libvirt_uri)
+            errors.append(msg)
+
         domain = conn.lookupByName(name)
-    except libvirt.libvirtError as exc:
-        return domains_info.append(domain_info)
 
-    if domain is None:
-        msg = 'Failed to get domain for connection {}'.format(self.libvirt_uri)
-        return jsonify({'error': msg})
+        if domain is None:
+            msg = 'Failed to get domain for connection {}'.format(self.libvirt_uri)
+            errors.append(msg)
 
-    domain_info = get_domain_data(conn, domain, state)
+        domain_info = get_domain_data(conn, domain, state)
+
+    except Exception as exc:
+        errors.append(str(exc))
+
     domains_info.append(domain_info)
 
-    return jsonify({'domains': domains_info})
+    return jsonify({'domains': domains_info, 'errors': errors})
 
 if __name__ == '__main__':
     utility_name = os.path.splitext(os.path.basename(__file__))[0]
