@@ -131,7 +131,7 @@ def get_ip(conn, domain, root):
     '''
     ip_address = ""
     ip_info = dict()
-    mac_address = ''
+    mac_address = 'empty'
 
     config = Config().config
 
