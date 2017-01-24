@@ -217,12 +217,15 @@ def get_domain_data(conn, domain, state):
 
     # 1 is the state for a running guest
     if state == str(state_info) or state == 'all':
+        infos = domain.info()
+
         domain_info = dict(
                         libvirt_name=domain.name(),
                         libvirt_id=domain.ID(),
                         libvirt_uuid=domain.UUIDString(),
-                        libvirt_mem=domain.maxMemory(),
-                        libvirt_vcpu=domain.maxVcpus()
+                        libvirt_state=infos[0],
+                        libvirt_mem=infos[1],
+                        libvirt_vcpu=infos[3]
                     )
 
         domain_name = domain.name()
