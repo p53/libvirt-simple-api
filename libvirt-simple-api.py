@@ -76,9 +76,9 @@ def get_ip_from_dhcp(mac_address):
     ip_address = ""
 
     config = Config().config
-    key_name=config['dhcp_api']['key_name'].encode('utf-8')
-    base64_encoded_key=config['dhcp_api']['base64_encoded_key'].encode('utf-8')
-    dhcp_server_ip=config['dhcp_api']['dhcp_server_ip']
+    key_name = config['dhcp_api']['key_name'].encode('utf-8')
+    base64_encoded_key = config['dhcp_api']['base64_encoded_key'].encode('utf-8')
+    dhcp_server_ip = config['dhcp_api']['dhcp_server_ip']
     port = int(config['dhcp_api']['port'])
 
     try:
@@ -130,7 +130,22 @@ def get_ip(conn, domain, root):
         successful we try by DNS resolution of VM name
     '''
     ip_address = ""
+    ip_info = dict()
+    mac_address = ''
+
     config = Config().config
+
+    kvm_net_intf = root.find("./devices/interface[@type='network']")
+    kvm_bridge_intf = root.find("./devices/interface[@type='bridge']")
+
+    if kvm_net_intf is not None:
+        mac_elem = kvm_net_intf.find('mac')
+        if mac_elem is not None:
+            mac_address = mac_elem.get('address')
+    if kvm_bridge_intf is not None:
+        mac_elem = kvm_bridge_intf.find('mac')
+        if mac_elem is not None:
+            mac_address = mac_elem.get('address')
 
     try:
         ifaces = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT, 0)
@@ -141,15 +156,12 @@ def get_ip(conn, domain, root):
             if iface_address['type'] == 0:
                 ip_address = iface_address['addr']
     except (AttributeError, libvirt.libvirtError) as exc:
-        kvm_net_intf = root.find("./devices/interface[@type='network']")
 
         if kvm_net_intf is not None:
             source_elem = kvm_net_intf.find('source')
-            mac_elem = kvm_net_intf.find('mac')
 
-            if source_elem is not None and mac_elem is not None:
+            if source_elem is not None and mac_address is not None:
                 network_name = source_elem.get('network')
-                mac_address = mac_elem.get('address')
 
                 network = conn.networkLookupByName(network_name)
                 dhcp_leases = network.DHCPLeases(mac_address)
@@ -175,12 +187,7 @@ def get_ip(conn, domain, root):
                         except socket.gaierror as exc:
                             pass
 
-        kvm_bridge_intf = root.find("./devices/interface[@type='bridge']")
-
         if kvm_bridge_intf is not None:
-            mac_elem = kvm_bridge_intf.find('mac')
-            mac_address = mac_elem.get('address')
-
             if config['dhcp_api']['use_dhcp']:
                 try:
                     ip_address = get_ip_from_dhcp(mac_address)
@@ -199,7 +206,9 @@ def get_ip(conn, domain, root):
                 except socket.gaierror as exc:
                     pass
 
-    return ip_address
+    ip_info[mac_address] = ip_address
+
+    return ip_info
 
 def get_domain_data(conn, domain, state):
     tags = []
@@ -211,7 +220,9 @@ def get_domain_data(conn, domain, state):
         domain_info = dict(
                         libvirt_name=domain.name(),
                         libvirt_id=domain.ID(),
-                        libvirt_uuid=domain.UUIDString()
+                        libvirt_uuid=domain.UUIDString(),
+                        libvirt_mem=domain.maxMemory(),
+                        libvirt_vcpu=domain.maxVcpus()
                     )
 
         domain_name = domain.name()
@@ -219,7 +230,8 @@ def get_domain_data(conn, domain, state):
         root = ET.fromstring(domain.XMLDesc(0))
         ansible_ns = {'ansible': 'https://github.com/ansible/ansible'}
 
-        domain_info['libvirt_ipv4'] = get_ip(conn, domain, root)
+        domain_info['libvirt_ipv4'] = list(get_ip(conn, domain, root).values())[0]
+        domain_info['libvirt_mac'] = list(get_ip(conn, domain, root).keys())[0]
 
         for tag_elem in root.findall('./metadata/ansible:tags/ansible:tag', ansible_ns):
             tag_name = tag_elem.find('ansible:key', ansible_ns).text
@@ -312,4 +324,4 @@ if __name__ == '__main__':
 
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     context.load_cert_chain(certfile=cert_path, keyfile=private_key_path)
-    app.run(host=server_ip,port=server_port,debug=False,ssl_context=context)
+    app.run(host=server_ip,port=server_port,debug=True,ssl_context=context)
