@@ -211,7 +211,7 @@ def get_ip(conn, domain, root):
     return ip_info
 
 def get_domain_data(conn, domain, state):
-    tags = []
+    tags = {}
     domain_info = {}
     state_info, _ = domain.state()
 
@@ -239,9 +239,7 @@ def get_domain_data(conn, domain, state):
         for tag_elem in root.findall('./metadata/ansible:tags/ansible:tag', ansible_ns):
             tag_name = tag_elem.find('ansible:key', ansible_ns).text
             tag_value = tag_elem.find('ansible:value', ansible_ns).text
-            tag = 'tag_{}_{}'.format(tag_name, tag_value)
-
-            tags.append(tag)
+            tags[tag_name] = tag_value
 
         domain_info['libvirt_tags'] = tags
 
