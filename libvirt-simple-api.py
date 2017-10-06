@@ -183,7 +183,7 @@ def get_ip(conn, domain, root):
                         try:
                             data = socket.gethostbyname(domain.name())
                             ip = repr(data)
-                            ip_address = ip.replace("'","")
+                            ip_address = ip
                         except socket.gaierror as exc:
                             pass
 
@@ -202,11 +202,11 @@ def get_ip(conn, domain, root):
                 try:
                     data = socket.gethostbyname(domain.name())
                     ip = repr(data)
-                    ip_address = ip.replace("'","")
+                    ip_address = ip
                 except socket.gaierror as exc:
                     pass
 
-    ip_info[mac_address] = ip_address
+    ip_info[mac_address] = ip_address.replace("'","")
 
     return ip_info
 
